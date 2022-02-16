@@ -16,7 +16,11 @@ It uses the [In-App Review](https://developer.android.com/guide/playcore/in-app-
 void initState() {
   super.initState();
   initPlatformState();
-  AdvancedInAppReview().setMinDaysBeforeRemind(7).setMinDaysAfterInstall(2).setMinLaunchTimes(2).monitor();
+  AdvancedInAppReview()
+      .setMinDaysBeforeRemind(7)
+      .setMinDaysAfterInstall(2)
+      .setMinLaunchTimes(2)
+      .monitor();
 }
 ```
 
