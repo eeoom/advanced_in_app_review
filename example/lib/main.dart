@@ -22,6 +22,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    AdvancedInAppReview().setMinDaysBeforeRemind(7).setMinDaysAfterInstall(2).setMinLaunchTimes(2).monitor();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
