@@ -24,7 +24,10 @@ class InAppReviewManager {
       if (await _isFirstLaunch() == true) {
         _setInstallDate();
       }
-      _setLaunchTimes(await _getLaunchTimes() + 1);
+  }
+
+  void applicationWasLaunched() async {
+    _setLaunchTimes(await _getLaunchTimes() + 1);
   }
 
   Future<bool> showRateDialogIfMeetsConditions() async {
@@ -68,15 +71,18 @@ class InAppReviewManager {
   }
 
   Future<bool> _isOverLaunchTimes() async {
-    return await _getLaunchTimes() >= _minLaunchTimes;
+    bool overLaunchTimes = await _getLaunchTimes() >= _minLaunchTimes;
+    return overLaunchTimes;
   }
 
   Future<bool> _isOverInstallDate() async {
-    return _isOverDate(await _getInstallTimestamp(), _minDaysAfterInstall);
+    bool overInstallDate = await _isOverDate(await _getInstallTimestamp(), _minDaysAfterInstall);
+    return overInstallDate;
   }
 
   Future<bool> _isOverRemindDate() async {
-    return _isOverDate(await _getRemindTimestamp(), _minDaysBeforeRemind);
+    bool overRemindDate = await _isOverDate(await _getRemindTimestamp(), _minDaysBeforeRemind);
+    return overRemindDate;
   }
 
   // Helpers
