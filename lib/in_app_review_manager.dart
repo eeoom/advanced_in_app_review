@@ -5,11 +5,11 @@ class InAppReviewManager {
   static final InAppReviewManager _singleton = InAppReviewManager._internal();
   InAppReviewManager._internal();
 
-  static const String _PREF_KEY_INSTALL_DATE =
+  static const String _prefKeyInstallDate =
       "advanced_in_app_review_install_date";
-  static const String _PREF_KEY_LAUNCH_TIMES =
+  static const String _prefKeyLaunchTimes =
       "advanced_in_app_review_launch_times";
-  static const String _PREF_KEY_REMIND_INTERVAL =
+  static const String _prefKeyRemindInterval =
       "advanced_in_app_review_launch_times";
 
   static int _minLaunchTimes = 2;
@@ -98,13 +98,13 @@ class InAppReviewManager {
 
   Future<bool> _isFirstLaunch() async {
     final prefs = await SharedPreferences.getInstance();
-    final int? installDate = prefs.getInt(_PREF_KEY_INSTALL_DATE);
+    final int? installDate = prefs.getInt(_prefKeyInstallDate);
     return installDate == null;
   }
 
   Future<int> _getInstallTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
-    final int? installTimestamp = prefs.getInt(_PREF_KEY_INSTALL_DATE);
+    final int? installTimestamp = prefs.getInt(_prefKeyInstallDate);
     if (installTimestamp != null) {
       return installTimestamp;
     }
@@ -114,12 +114,12 @@ class InAppReviewManager {
   void _setInstallDate() async {
     final prefs = await SharedPreferences.getInstance();
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    prefs.setInt(_PREF_KEY_INSTALL_DATE, timestamp);
+    prefs.setInt(_prefKeyInstallDate, timestamp);
   }
 
   Future<int> _getLaunchTimes() async {
     final prefs = await SharedPreferences.getInstance();
-    final int? launchTimes = prefs.getInt(_PREF_KEY_LAUNCH_TIMES);
+    final int? launchTimes = prefs.getInt(_prefKeyLaunchTimes);
     if (launchTimes != null) {
       return launchTimes;
     }
@@ -128,12 +128,12 @@ class InAppReviewManager {
 
   static void _setLaunchTimes(int launchTimes) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setInt(_PREF_KEY_LAUNCH_TIMES, launchTimes);
+    prefs.setInt(_prefKeyLaunchTimes, launchTimes);
   }
 
   Future<int> _getRemindTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
-    final int? remindIntervalTime = prefs.getInt(_PREF_KEY_REMIND_INTERVAL);
+    final int? remindIntervalTime = prefs.getInt(_prefKeyRemindInterval);
     if (remindIntervalTime != null) {
       return remindIntervalTime;
     }
@@ -142,8 +142,7 @@ class InAppReviewManager {
 
   void _setRemindTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove(_PREF_KEY_REMIND_INTERVAL);
-    prefs.setInt(
-        _PREF_KEY_REMIND_INTERVAL, DateTime.now().millisecondsSinceEpoch);
+    prefs.remove(_prefKeyRemindInterval);
+    prefs.setInt(_prefKeyRemindInterval, DateTime.now().millisecondsSinceEpoch);
   }
 }

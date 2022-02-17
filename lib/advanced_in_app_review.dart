@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:advanced_in_app_review/InAppReviewManager.dart';
+import 'package:advanced_in_app_review/in_app_review_manager.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
