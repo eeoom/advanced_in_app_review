@@ -9,3 +9,7 @@
 ## 1.0.2
 
 * readme updated
+
+## 1.0.3
+
+* code style
