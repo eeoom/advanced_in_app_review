@@ -1,13 +1,10 @@
-
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:advanced_in_app_review/InAppReviewManager.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class AdvancedInAppReview with WidgetsBindingObserver {
-
   static const MethodChannel _channel = MethodChannel('advanced_in_app_review');
   final InAppReviewManager _manager = InAppReviewManager();
 
@@ -56,7 +53,4 @@ class AdvancedInAppReview with WidgetsBindingObserver {
     _manager.applicationWasLaunched();
     _manager.showRateDialogIfMeetsConditions();
   }
-
 }
-
-
