@@ -22,7 +22,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
-    AdvancedInAppReview().setMinDaysBeforeRemind(7).setMinDaysAfterInstall(2).setMinLaunchTimes(2).monitor();
+    AdvancedInAppReview()
+        .setMinDaysBeforeRemind(7)
+        .setMinDaysAfterInstall(2)
+        .setMinLaunchTimes(2)
+        .monitor();
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -31,8 +35,8 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      platformVersion =
-          await AdvancedInAppReview.platformVersion ?? 'Unknown platform version';
+      platformVersion = await AdvancedInAppReview.platformVersion ??
+          'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

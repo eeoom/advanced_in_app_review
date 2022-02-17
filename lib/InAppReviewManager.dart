@@ -2,13 +2,15 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InAppReviewManager {
-
   static final InAppReviewManager _singleton = InAppReviewManager._internal();
   InAppReviewManager._internal();
 
-  static const String _PREF_KEY_INSTALL_DATE = "advanced_in_app_review_install_date";
-  static const String _PREF_KEY_LAUNCH_TIMES = "advanced_in_app_review_launch_times";
-  static const String _PREF_KEY_REMIND_INTERVAL = "advanced_in_app_review_launch_times";
+  static const String _PREF_KEY_INSTALL_DATE =
+      "advanced_in_app_review_install_date";
+  static const String _PREF_KEY_LAUNCH_TIMES =
+      "advanced_in_app_review_launch_times";
+  static const String _PREF_KEY_REMIND_INTERVAL =
+      "advanced_in_app_review_launch_times";
 
   static int _minLaunchTimes = 2;
   static int _minDaysAfterInstall = 2;
@@ -19,9 +21,9 @@ class InAppReviewManager {
   }
 
   void monitor() async {
-      if (await _isFirstLaunch() == true) {
-        _setInstallDate();
-      }
+    if (await _isFirstLaunch() == true) {
+      _setInstallDate();
+    }
   }
 
   void applicationWasLaunched() async {
@@ -74,19 +76,22 @@ class InAppReviewManager {
   }
 
   Future<bool> _isOverInstallDate() async {
-    bool overInstallDate = await _isOverDate(await _getInstallTimestamp(), _minDaysAfterInstall);
+    bool overInstallDate =
+        await _isOverDate(await _getInstallTimestamp(), _minDaysAfterInstall);
     return overInstallDate;
   }
 
   Future<bool> _isOverRemindDate() async {
-    bool overRemindDate = await _isOverDate(await _getRemindTimestamp(), _minDaysBeforeRemind);
+    bool overRemindDate =
+        await _isOverDate(await _getRemindTimestamp(), _minDaysBeforeRemind);
     return overRemindDate;
   }
 
   // Helpers
 
   Future<bool> _isOverDate(int targetDate, int threshold) async {
-    return DateTime.now().millisecondsSinceEpoch - targetDate >= threshold * 24 * 60 * 60 * 1000;
+    return DateTime.now().millisecondsSinceEpoch - targetDate >=
+        threshold * 24 * 60 * 60 * 1000;
   }
 
   // Shared Preference Values
@@ -138,7 +143,7 @@ class InAppReviewManager {
   void _setRemindTimestamp() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.remove(_PREF_KEY_REMIND_INTERVAL);
-    prefs.setInt(_PREF_KEY_REMIND_INTERVAL, DateTime.now().millisecondsSinceEpoch);
+    prefs.setInt(
+        _PREF_KEY_REMIND_INTERVAL, DateTime.now().millisecondsSinceEpoch);
   }
-
 }
