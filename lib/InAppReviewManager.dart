@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,9 +6,9 @@ class InAppReviewManager {
   static final InAppReviewManager _singleton = InAppReviewManager._internal();
   InAppReviewManager._internal();
 
-  static final String _PREF_KEY_INSTALL_DATE = "advanced_in_app_review_install_date";
-  static final String _PREF_KEY_LAUNCH_TIMES = "advanced_in_app_review_launch_times";
-  static final String _PREF_KEY_REMIND_INTERVAL = "advanced_in_app_review_launch_times";
+  static const String _PREF_KEY_INSTALL_DATE = "advanced_in_app_review_install_date";
+  static const String _PREF_KEY_LAUNCH_TIMES = "advanced_in_app_review_launch_times";
+  static const String _PREF_KEY_REMIND_INTERVAL = "advanced_in_app_review_launch_times";
 
   static int _minLaunchTimes = 2;
   static int _minDaysAfterInstall = 2;
