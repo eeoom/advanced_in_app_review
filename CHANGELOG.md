@@ -13,3 +13,7 @@
 ## 1.0.3
 
 * code style
+
+## 1.0.4
+
+* project structure
