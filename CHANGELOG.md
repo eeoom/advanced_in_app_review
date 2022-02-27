@@ -1,19 +1,30 @@
-## 1.0.0
+## 1.0.5
 
-* First version.
+* typo in one key value corrected.
 
-## 1.0.1
+## 1.0.4
 
-* Some changes to project settings
-
-## 1.0.2
-
-* readme updated
+* project structure
 
 ## 1.0.3
 
 * code style
 
-## 1.0.4
+## 1.0.2
 
-* project structure
+* readme updated
+
+## 1.0.1
+
+* Some changes to project settings
+
+## 1.0.0
+
+* First version.
+
+
+
+
+
+
+
