@@ -10,7 +10,7 @@ class InAppReviewManager {
   static const String _prefKeyLaunchTimes =
       "advanced_in_app_review_launch_times";
   static const String _prefKeyRemindInterval =
-      "advanced_in_app_review_launch_times";
+      "advanced_in_app_remind_interval";
 
   static int _minLaunchTimes = 2;
   static int _minDaysAfterInstall = 2;
