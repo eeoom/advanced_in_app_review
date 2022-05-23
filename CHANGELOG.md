@@ -1,3 +1,7 @@
+## 1.1.0
+
+* support for Flutter 3.0
+
 ## 1.0.5
 
 * typo in one key value corrected.
