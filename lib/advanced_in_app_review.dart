@@ -38,7 +38,7 @@ class AdvancedInAppReview with WidgetsBindingObserver {
   }
 
   _startObserver() {
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     _afterLaunch();
   }
 
