@@ -1,3 +1,7 @@
+## 1.0.6
+
+* kotlin-gradle-plugin version upgraded to 1.7.20.
+
 ## 1.0.5
 
 * typo in one key value corrected.
