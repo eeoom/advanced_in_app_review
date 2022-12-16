@@ -1,6 +1,10 @@
-## 1.0.6
+## 1.1.1
 
 * kotlin-gradle-plugin version upgraded to 1.7.20.
+
+## 1.1.0
+
+* support for Flutter 3.0
 
 ## 1.0.5
 
