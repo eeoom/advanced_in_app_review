@@ -1,3 +1,7 @@
+## 1.1.3
+
+* set kotlin-gradle-plugin version back to 1.7.20 as it may cause compilation errors.
+
 ## 1.1.2
 
 * feature setMinSecondsBeforeShowDialog added.
