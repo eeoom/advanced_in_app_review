@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class InAppReviewManager {
   static final InAppReviewManager _singleton = InAppReviewManager._internal();
+
   InAppReviewManager._internal();
 
   static const String _prefKeyInstallDate =
@@ -15,6 +16,7 @@ class InAppReviewManager {
   static int _minLaunchTimes = 2;
   static int _minDaysAfterInstall = 2;
   static int _minDaysBeforeRemind = 1;
+  static int _minSecondsBeforeShowDialog = 1;
 
   factory InAppReviewManager() {
     return _singleton;
@@ -33,7 +35,9 @@ class InAppReviewManager {
   Future<bool> showRateDialogIfMeetsConditions() async {
     bool isMeetsConditions = await _shouldShowRateDialog();
     if (isMeetsConditions) {
-      _showDialog();
+      Future.delayed(Duration(seconds: _minSecondsBeforeShowDialog), () {
+        _showDialog();
+      });
     }
     return isMeetsConditions;
   }
@@ -50,6 +54,10 @@ class InAppReviewManager {
 
   void setMinDaysBeforeRemind(int days) {
     _minDaysBeforeRemind = days;
+  }
+
+  void setMinSecondsBeforeShowDialog(int seconds) {
+    _minSecondsBeforeShowDialog = seconds;
   }
 
   // Dialog
