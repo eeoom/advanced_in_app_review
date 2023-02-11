@@ -1,3 +1,7 @@
+## 1.1.2
+
+* feature setMinSecondsBeforeShowDialog added.
+
 ## 1.1.1
 
 * kotlin-gradle-plugin version upgraded to 1.7.20.
