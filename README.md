@@ -7,6 +7,23 @@ The average end-user will only write a review if something is wrong with your Ap
 
 It uses the [In-App Review](https://developer.android.com/guide/playcore/in-app-review) API on Android and the [SKStoreReviewController](https://developer.apple.com/documentation/storekit/skstorereviewcontroller) on iOS/MacOS.
 
+# Setup (Android only)
+
+The Play In-App Review Library is a part of the Google Play Core libraries. Please include the following Gradle dependency to integrate the Play In-App Review Library. More info see [Android doc](https://developer.android.com/guide/playcore/in-app-review/kotlin-java).
+
+ ```
+ // In your app’s build.gradle file:
+ ...
+ dependencies {
+     // This dependency is downloaded from the Google’s Maven repository.
+     // So, make sure you also include that repository in your project's build.gradle file.
+     implementation 'com.google.android.play:review:2.0.1'
+     // For Kotlin users also add the Kotlin extensions library for Play In-App Review:
+     implementation 'com.google.android.play:review-ktx:2.0.1'
+     ...
+ }
+ ```
+
 ## Usage
 
 ### Simple 1-line Setup
