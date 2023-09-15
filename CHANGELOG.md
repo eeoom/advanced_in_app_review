@@ -1,3 +1,7 @@
+## 1.2.0
+
+* important install instructions for Android added.
+
 ## 1.1.3
 
 * set kotlin-gradle-plugin version back to 1.7.20 as it may cause compilation errors.
