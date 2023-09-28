@@ -1,3 +1,7 @@
+## 1.2.1
+
+* namespace added for Android.
+
 ## 1.2.0
 
 * important install instructions for Android added.
