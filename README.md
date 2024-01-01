@@ -9,7 +9,7 @@ It uses the [In-App Review](https://developer.android.com/guide/playcore/in-app-
 
 # Setup (Android only)
 
-The Play In-App Review Library is a part of the Google Play Core libraries. Please include the following Gradle dependency to integrate the Play In-App Review Library. More info see [Android doc](https://developer.android.com/guide/playcore/in-app-review/kotlin-java).
+The Play In-App Review library is a part of the Google Play Core libraries. Please include the following Gradle dependency to integrate the Play In-App Review Library. More info see [Android doc](https://developer.android.com/guide/playcore/in-app-review/kotlin-java).
 
  ```
  // In your app’s build.gradle file:
