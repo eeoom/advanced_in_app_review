@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,6 +15,8 @@ class InAppReviewManager {
   static const String _prefKeyRemindInterval =
       "advanced_in_app_remind_interval";
 
+  static void Function()? _onRequestedReview;
+
   static int _minLaunchTimes = 2;
   static int _minDaysAfterInstall = 2;
   static int _minDaysBeforeRemind = 1;
@@ -22,7 +26,8 @@ class InAppReviewManager {
     return _singleton;
   }
 
-  void monitor() async {
+  void monitor(VoidCallback? onRequestedReview) async {
+    _onRequestedReview = onRequestedReview;
     if (await _isFirstLaunch() == true) {
       _setInstallDate();
     }
@@ -66,6 +71,7 @@ class InAppReviewManager {
     final InAppReview inAppReview = InAppReview.instance;
     if (await inAppReview.isAvailable()) {
       inAppReview.requestReview();
+      _onRequestedReview?.call();
     }
     _setRemindTimestamp();
   }

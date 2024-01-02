@@ -14,8 +14,8 @@ class AdvancedInAppReview with WidgetsBindingObserver {
   }
 
   /// Start monitoring conditions to decide wheter a view attemp is made or not
-  void monitor() {
-    _manager.monitor();
+  void monitor({VoidCallback? onRequestedReview}) {
+    _manager.monitor(onRequestedReview);
     _startObserver();
   }
 
