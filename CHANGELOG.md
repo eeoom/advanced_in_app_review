@@ -1,3 +1,7 @@
+## 1.3.0
+
+* gradle settings
+
 ## 1.2.1
 
 * namespace added for Android.
