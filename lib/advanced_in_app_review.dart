@@ -37,6 +37,13 @@ class AdvancedInAppReview with WidgetsBindingObserver {
     return this;
   }
 
+  /// If the conditions for showing the rating dialog are met, wait a number
+  /// of seconds before trying to show up the rating dialog.
+  AdvancedInAppReview setMinSecondsBeforeShowDialog(int seconds) {
+    _manager.setMinSecondsBeforeShowDialog(seconds);
+    return this;
+  }
+
   _startObserver() {
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
     _afterLaunch();

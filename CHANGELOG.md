@@ -1,3 +1,23 @@
+## 1.3.0
+
+* gradle settings
+
+## 1.2.1
+
+* namespace added for Android.
+
+## 1.2.0
+
+* important install instructions for Android added.
+
+## 1.1.3
+
+* set kotlin-gradle-plugin version back to 1.7.20 as it may cause compilation errors.
+
+## 1.1.2
+
+* feature setMinSecondsBeforeShowDialog added.
+
 ## 1.1.1
 
 * kotlin-gradle-plugin version upgraded to 1.7.20.

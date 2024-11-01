@@ -26,6 +26,7 @@ class _MyAppState extends State<MyApp> {
         .setMinDaysBeforeRemind(7)
         .setMinDaysAfterInstall(2)
         .setMinLaunchTimes(2)
+        .setMinSecondsBeforeShowDialog(4)
         .monitor();
   }
 
