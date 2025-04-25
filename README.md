@@ -22,6 +22,17 @@ The Play In-App Review library is a part of the Google Play Core libraries. Plea
      implementation 'com.google.android.play:review-ktx:2.0.1'
      ...
  }
+
+ // Or if you have a build.gradle.kts file: 
+ ...
+ dependencies {
+     // This dependency is downloaded from the Google’s Maven repository.
+     // So, make sure you also include that repository in your project's build.gradle file.
+     implementation("com.google.android.play:review:2.0.1")
+     // For Kotlin users also add the Kotlin extensions library for Play In-App Review:
+     implementation("com.google.android.play:review-ktx:2.0.1")
+     ...
+ }
  ```
 
 ## Usage
