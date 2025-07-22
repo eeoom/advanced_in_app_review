@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InAppReviewManager {
   static final InAppReviewManager _singleton = InAppReviewManager._internal();
+  final List<AsyncValueGetter<bool>> _customConditions = [];
 
   InAppReviewManager._internal();
 
@@ -60,6 +62,9 @@ class InAppReviewManager {
     _minSecondsBeforeShowDialog = seconds;
   }
 
+  void addCustomConditionBeforeShowDialog(AsyncValueGetter<bool> condition) {
+    _customConditions.add(condition);
+  }
   // Dialog
 
   void _showDialog() async {
@@ -75,7 +80,8 @@ class InAppReviewManager {
   Future<bool> _shouldShowRateDialog() async {
     return await _isOverLaunchTimes() &&
         await _isOverInstallDate() &&
-        await _isOverRemindDate();
+        await _isOverRemindDate() &&
+        await _checkCustomConditions();
   }
 
   Future<bool> _isOverLaunchTimes() async {
@@ -93,6 +99,14 @@ class InAppReviewManager {
     bool overRemindDate =
         await _isOverDate(await _getRemindTimestamp(), _minDaysBeforeRemind);
     return overRemindDate;
+  }
+
+  Future<bool> _checkCustomConditions() async {
+    for (var condition in _customConditions) {
+      final result = await condition();
+      if (result == false) return false;
+    }
+    return true;
   }
 
   // Helpers

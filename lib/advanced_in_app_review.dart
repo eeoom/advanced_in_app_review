@@ -1,13 +1,12 @@
 import 'dart:async';
-
 import 'package:advanced_in_app_review/in_app_review_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class AdvancedInAppReview with WidgetsBindingObserver {
   static const MethodChannel _channel = MethodChannel('advanced_in_app_review');
   final InAppReviewManager _manager = InAppReviewManager();
-
   static Future<String?> get platformVersion async {
     final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
@@ -41,6 +40,14 @@ class AdvancedInAppReview with WidgetsBindingObserver {
   /// of seconds before trying to show up the rating dialog.
   AdvancedInAppReview setMinSecondsBeforeShowDialog(int seconds) {
     _manager.setMinSecondsBeforeShowDialog(seconds);
+    return this;
+  }
+
+  /// Adds a custom asynchronous condition that must return `true`
+  /// before the in-app review dialog is shown.
+  AdvancedInAppReview addCustomConditionBeforeShowDialog(
+      AsyncValueGetter<bool> condition) {
+    _manager.addCustomConditionBeforeShowDialog(condition);
     return this;
   }
 
