@@ -1,3 +1,7 @@
+## 1.4.0
+
+* libraries and dependencies updated
+
 ## 1.3.0
 
 * gradle settings
