@@ -13,8 +13,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  in_app_review: ^2.0.9
-  shared_preferences: ^2.3.2
+  in_app_review: ^2.0.11
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
