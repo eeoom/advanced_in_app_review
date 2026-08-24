@@ -20,7 +20,7 @@ rootProject.allprojects {
 
 android {
     namespace "com.eeoom.advanced_in_app_review"
-    compileSdk 33
+    compileSdk 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
