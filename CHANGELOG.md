@@ -1,3 +1,7 @@
+## 1.5.0
+
+* targetSDK up to 36
+
 ## 1.4.0
 
 * libraries and dependencies updated
