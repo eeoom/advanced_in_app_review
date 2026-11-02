@@ -1,3 +1,19 @@
+## 2.0.0-dev.1
+
+* Integrate native StoreKit and Google Play Review directly; remove in_app_review.
+* Resolve the active iOS window from the requesting Flutter view and run StoreKit
+  on the main actor; report missing-window and inactive-app errors explicitly.
+* Handle Android callback exceptions, detached activities and late/duplicate replies.
+* Await and serialize initialization and counter writes. Prevent overlapping
+  requests and cancel pending delays on backgrounding/disposal.
+* Add explicit eligibility requests, significant events, diagnostics and store links.
+* Default to explicit requests, 30-minute session gaps and a 90-day reminder.
+* Migrate existing plugin preferences to SharedPreferencesAsync without touching
+  unrelated application data; make configuration instance-specific.
+* Add SwiftPM/Privacy Manifest support and modernize Android Kotlin/Gradle builds.
+* Require Flutter 3.47/Dart 3.13, Android API 24+ and iOS 13+ (Flutter may require newer).
+* Add Dart, Android native and device integration tests and CI build checks.
+
 ## 1.5.0
 
 * targetSDK up to 36

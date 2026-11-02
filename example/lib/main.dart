@@ -1,68 +1,81 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:advanced_in_app_review/advanced_in_app_review.dart';
+import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  late final AdvancedInAppReview _review;
+  String _status = 'Complete tasks to become eligible for a review request.';
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-    AdvancedInAppReview()
-        .setMinDaysBeforeRemind(7)
-        .setMinDaysAfterInstall(2)
-        .setMinLaunchTimes(2)
-        .setMinSecondsBeforeShowDialog(4)
-        .monitor();
+    _review =
+        AdvancedInAppReview(
+            onResult: (result) {
+              if (mounted) setState(() => _status = result.toString());
+            },
+          )
+          ..setMinDaysAfterInstall(0)
+          ..setMinLaunchTimes(1)
+          ..setMinSignificantEvents(3)
+          ..setMinSecondsBeforeShowDialog(2);
+    _initialize();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+  Future<void> _initialize() async {
     try {
-      platformVersion = await AdvancedInAppReview.platformVersion ??
-          'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      await _review.monitor();
+    } catch (error) {
+      if (mounted) setState(() => _status = 'Initialization failed: $error');
     }
+  }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
+  Future<void> _completeTask() async {
+    try {
+      await _review.recordSignificantEvent();
+      await _review.requestReviewIfEligible();
+    } catch (error) {
+      if (mounted) setState(() => _status = 'Could not record task: $error');
+    }
   }
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+  void dispose() {
+    _review.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Advanced In-App Review')),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_status),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: _completeTask,
+              child: const Text('Complete a task'),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'A request does not guarantee a visible dialog. '
+              'Use a physical iOS device or a Google Play test installation.',
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }

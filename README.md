@@ -1,57 +1,144 @@
 # advanced_in_app_review
 
-# Description
-A Flutter plugin that lets you show a review pop up where users can leave a review for your app without needing to leave your app.
+Native in-app review requests for **Android and iOS**, with persistent conditions,
+session counting, significant events, cancellation and diagnostic results.
+The package owns its StoreKit and Google Play integration; it does not depend on
+`in_app_review`.
 
-The average end-user will only write a review if something is wrong with your App. This leads to an unfairly negative skew in the ratings, when the majority of satisfied customers don’t leave reviews and only the dissatisfied ones do. In order to counter-balance the negatives, advanced_in_app_review prompts the user to write a review, but only after the developer knows they are satisfied. For example, you may only show the popup if the user has been using it for more than a week, and has done at least 5 significant events (the core functionality of your App). The rules are fully customizable for your App and easy to setup.
+## Requirements
 
-It uses the [In-App Review](https://developer.android.com/guide/playcore/in-app-review) API on Android and the [SKStoreReviewController](https://developer.apple.com/documentation/storekit/skstorereviewcontroller) on iOS/MacOS.
+- Flutter 3.47 / Dart 3.13 or newer.
+- Android API 24+, with Google Play Store for in-app reviews.
+- iOS 13+ at plugin level; your Flutter version may require a newer iOS target.
+- iOS supports both Swift Package Manager and CocoaPods.
 
-# Setup (Android only)
+Add `advanced_in_app_review` to your Flutter dependencies. No manual Play Review
+Gradle dependencies or review-specific iOS permissions are needed.
 
-The Play In-App Review library is a part of the Google Play Core libraries. Please include the following Gradle dependency to integrate the Play In-App Review Library. More info see [Android doc](https://developer.android.com/guide/playcore/in-app-review/kotlin-java).
+## Choose a suitable moment
 
- ```
- // In your app’s build.gradle file:
- ...
- dependencies {
-     // This dependency is downloaded from the Google’s Maven repository.
-     // So, make sure you also include that repository in your project's build.gradle file.
-     implementation 'com.google.android.play:review:2.0.1'
-     // For Kotlin users also add the Kotlin extensions library for Play In-App Review:
-     implementation 'com.google.android.play:review-ktx:2.0.1'
-     ...
- }
- ```
-
-## Usage
-
-### Simple 1-line Setup
+Initialize one instance in your root widget. After a meaningful completed task,
+record the event and ask the package to check eligibility:
 
 ```dart
-@override
-void initState() {
-  super.initState();
-  initPlatformState();
-  AdvancedInAppReview()
-      .setMinDaysBeforeRemind(7)
-      .setMinDaysAfterInstall(2)
-      .setMinLaunchTimes(2)
-      .setMinSecondsBeforeShowDialog(4)
-      .monitor();
-}
+final review = AdvancedInAppReview(
+  onResult: (result) => debugPrint(result.toString()),
+)
+  ..setMinDaysAfterInstall(7)
+  ..setMinLaunchTimes(5)
+  ..setMinSignificantEvents(3)
+  ..setMinDaysBeforeRemind(90)
+  ..setMinSecondsBeforeShowDialog(2);
+
+await review.monitor();
+
+// At a natural pause after completing a task:
+await review.recordSignificantEvent();
+final result = await review.requestReviewIfEligible();
+
+// In your root widget's dispose():
+review.dispose();
 ```
 
-## Important notes for Android
+`monitor()` initializes and counts sessions; **it does not request a review by
+default**. The first call counts one session. Subsequent foreground transitions
+count a new session only after at least 30 minutes in the background. Configure
+that interval with `setMinSessionGap(Duration(...))`. System overlays and short
+app switches do not inflate the session count. Significant events accumulate
+across sessions and are not reset after an attempt.
 
-Google encourages developers not to spam users with review requests right when they first start an app, instead asking studios to prompt people only after they've used the application for a while. Developers also shouldn't interrupt users in the middle of a task. After leaving a review or aborting, people should be able to continue whatever they were doing seamlessly.
+For the legacy automatic behavior, explicitly opt in with
+`await review.monitor(automaticallyRequestReview: true)`. Automatic requests happen
+after initialization and new sessions, so an explicit request after a completed
+task is generally preferable. Call `monitor()` once with the intended mode.
 
-Android decides when and if such a review view will be presented to the user. So please do not wonder if the view is not presented during debugging. As Google also noted, it will not be working in debug mode. Please see https://developer.android.com/guide/playcore/in-app-review/test
+Keep one instance on the main isolate, await initialization and event writes, and
+dispose it with its owning widget. Configuration is per instance. Negative
+configuration values are rejected. Pending delays are cancelled when the app
+becomes inactive or the instance is disposed. An already submitted native request
+cannot be withdrawn by the Dart timer.
 
-# Requirements
-## Android
-Requires Android 5 Lollipop (API 21) or higher and the Google Play Store to be installed.
-## IOS
-Requires iOS version 10.3
+## Results and diagnostics
 
-Issues & pull requests are more than welcome!
+| Status | Meaning |
+| --- | --- |
+| `requested` | The native request completed. This does **not** confirm presentation or a rating. |
+| `conditionsNotMet` | The configured time, session, event or reminder threshold is not met. |
+| `alreadyPending` | Another review attempt is already in progress. |
+| `appNotActive` | The app or Android Activity is not in the foreground. |
+| `noActiveWindow` | iOS cannot find an attached, active window for this Flutter view. |
+| `notAvailable` | The platform integration or required store is unavailable. |
+| `cancelled` | A scheduled attempt was cancelled before invoking the native API. |
+| `failed` | A storage/native operation failed; inspect `errorCode` and `message`. |
+
+The reminder timestamp advances after a completed native request, even if the
+system silently suppresses the UI. Unavailable/failed requests do not advance it.
+The default reminder interval is 90 days. `isAvailable()` checks basic capability,
+not quota or whether the user will see a dialog; it is not required before a
+request. On Android it does not create and discard an extra review flow.
+
+iOS resolves the requesting Flutter view's attached window at call time and uses
+its active scene. It never picks an arbitrary `connectedScenes.first`. StoreKit
+calls execute on the main actor. Android rechecks Activity readiness after the
+asynchronous Play request and ignores late callbacks after detachment.
+
+## A permanent “Rate this app” button
+
+Use the store listing rather than a quota-limited in-app request:
+
+```dart
+await review.openStoreListing(appStoreId: 'YOUR_NUMERIC_APP_STORE_ID');
+```
+
+The ID is required only on iOS. Android uses the application package name and
+falls back to its HTTPS Play listing if the Play Store app cannot be opened.
+Handle exceptions from this method to provide feedback when opening fails.
+
+## Migration from 1.x
+
+- Remove any manually added `com.google.android.play:review` / `review-ktx`
+  dependencies that existed only for this package.
+- Await `monitor()`, which now returns `Future<void>`.
+- Trigger `requestReviewIfEligible()` after a suitable completed task, or opt
+  into automatic requests as described above.
+- The default reminder interval changes from 1 day to 90 days.
+- App launches now mean sessions, rather than every `resumed` lifecycle event.
+- Setters are instance-specific rather than modifying global singleton state.
+- Existing first-use date, launch count and last-attempt timestamp migrate to
+  `SharedPreferencesAsync`. Only this package's keys are migrated; existing
+  destination values are preserved. Event counting starts at zero.
+- “Days after install” actually means days since this package's first use, as in
+  1.x. Backup/restore behavior is determined by the app and OS storage settings.
+- `platformVersion` is retained for compatibility but deprecated.
+- Android/iOS are the supported targets; macOS and web are not implemented.
+
+## Testing
+
+```sh
+flutter analyze
+flutter test
+cd example
+flutter test test/widget_test.dart
+flutter build apk --debug
+cd android
+./gradlew :advanced_in_app_review:testDebugUnitTest
+cd ..
+flutter build ios --simulator --debug
+flutter test integration_test/native_review_test.dart -d <device-id>
+```
+
+Dart tests cover eligibility, migration, overlapping requests and lifecycle
+cancellation. Android tests cover native asynchronous errors, late callbacks and
+single replies. The integration test exercises the real native channel and the
+iOS host window; it does not assert that the system dialog appears.
+
+For Android review presentation, use Google Play internal testing or internal app
+sharing and an eligible Play account. A sideloaded debug build is insufficient to
+prove production presentation. On iOS use development-device testing; TestFlight
+does not display the review request. Store quotas and user settings still apply.
+
+See [Google Play testing](https://developer.android.com/guide/playcore/in-app-review/test)
+and [Apple review requests](https://developer.apple.com/documentation/storekit/requesting-app-store-reviews).
+
+Native integration was reworked with reference to the MIT-licensed
+`in_app_review` project. Attribution is included in `THIRD_PARTY_NOTICES`.
