@@ -47,10 +47,80 @@ that interval with `setMinSessionGap(Duration(...))`. System overlays and short
 app switches do not inflate the session count. Significant events accumulate
 across sessions and are not reset after an attempt.
 
-For the legacy automatic behavior, explicitly opt in with
-`await review.monitor(automaticallyRequestReview: true)`. Automatic requests happen
-after initialization and new sessions, so an explicit request after a completed
-task is generally preferable. Call `monitor()` once with the intended mode.
+## Automatic setup in `main.dart`
+
+For automatic review attempts, initialize the package once in the `State` of your
+root widget in `main.dart` and enable `automaticallyRequestReview`:
+
+```dart
+import 'package:advanced_in_app_review/advanced_in_app_review.dart';
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _review = AdvancedInAppReview(
+    onResult: (result) => debugPrint(result.toString()),
+  )
+    ..setMinDaysAfterInstall(7)
+    ..setMinLaunchTimes(5)
+    ..setMinDaysBeforeRemind(90)
+    ..setMinSecondsBeforeShowDialog(2);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _startReviewMonitoring();
+    });
+  }
+
+  Future<void> _startReviewMonitoring() async {
+    try {
+      await _review.monitor(automaticallyRequestReview: true);
+    } catch (error) {
+      debugPrint('Review initialization failed: $error');
+    }
+  }
+
+  @override
+  void dispose() {
+    _review.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => const MaterialApp(
+    home: Scaffold(body: Center(child: Text('My app'))),
+  );
+}
+```
+
+In this example, an attempt is eligible after at least **7 days since first use**
+and **5 sessions**, with at least **90 days between completed native requests**.
+All conditions must be met. The package checks after initialization and after a
+new session, then waits 2 seconds before requesting a review. It does not run a
+continuous timer or trigger exactly when the configured number of days elapses.
+A new session normally requires at least 30 minutes in the background.
+
+No calls to `recordSignificantEvent()` or `requestReviewIfEligible()` are needed
+for this setup. If you additionally configure `setMinSignificantEvents(...)`, you
+must record those events yourself. Call `monitor()` once with the intended mode.
+The operating system still decides whether to display a dialog. On iOS,
+TestFlight does not display review requests; use a development build to test
+presentation.
+
+For finer control over the moment of the request, use the explicit setup above
+after a completed task instead.
+
+## Lifecycle and configuration
 
 Keep one instance on the main isolate, await initialization and event writes, and
 dispose it with its owning widget. Configuration is per instance. Negative
