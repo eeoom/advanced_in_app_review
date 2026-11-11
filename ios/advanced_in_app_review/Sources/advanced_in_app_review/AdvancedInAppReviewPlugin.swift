@@ -61,8 +61,11 @@ public class AdvancedInAppReviewPlugin: NSObject, FlutterPlugin {
         defer { requesting = false }
         if #available(iOS 16.0, *) {
             AppStore.requestReview(in: scene)
-        } else {
+        } else if #available(iOS 14.0, *) {
             SKStoreReviewController.requestReview(in: scene)
+        } else {
+            // The scene-based overload is unavailable on iOS 13.
+            SKStoreReviewController.requestReview()
         }
         // This confirms API invocation only. StoreKit does not report display.
         result(nil)

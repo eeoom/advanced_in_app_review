@@ -1,5 +1,7 @@
 ## 2.0.0-dev.2
 
+* Fix the iOS 13 StoreKit fallback so SwiftPM builds honor the declared minimum
+  deployment target without calling the iOS 14-only scene overload.
 * Check Flutter 3.47.0 and 3.50.0 in CI across Dart tests, Android builds/native
   tests and iOS SwiftPM/CocoaPods builds and simulator integration tests.
 * Update the Android example to AGP 9.3.1, Gradle 9.5.0 and Kotlin 2.4.20 for
