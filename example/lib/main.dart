@@ -1,5 +1,5 @@
 import 'package:advanced_in_app_review/advanced_in_app_review.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() => runApp(const MyApp());
 

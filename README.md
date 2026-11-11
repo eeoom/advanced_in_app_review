@@ -50,11 +50,13 @@ across sessions and are not reset after an attempt.
 ## Automatic setup in `main.dart`
 
 For automatic review attempts, initialize the package once in the `State` of your
-root widget in `main.dart` and enable `automaticallyRequestReview`:
+root widget in `main.dart` and enable `automaticallyRequestReview`. This Material
+UI example requires `material_ui: ^1.0.0` in your app dependencies (supported from
+Flutter 3.47 onward):
 
 ```dart
 import 'package:advanced_in_app_review/advanced_in_app_review.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() => runApp(const MyApp());
 
@@ -196,6 +198,13 @@ cd ..
 flutter build ios --simulator --debug
 flutter test integration_test/native_review_test.dart -d <device-id>
 ```
+
+GitHub Actions checks Flutter **3.47.0** and **3.50.0**, including analysis,
+Dart/widget tests, Android builds and native tests, and iOS builds with both
+SwiftPM and CocoaPods. The SwiftPM jobs also run the iOS integration test.
+
+The example uses AGP 9.3.1, Gradle 9.5.0 and Kotlin 2.4.20. The plugin itself
+does not pin the consuming app's Android build-tool versions.
 
 Dart tests cover eligibility, migration, overlapping requests and lifecycle
 cancellation. Android tests cover native asynchronous errors, late callbacks and
