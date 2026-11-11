@@ -5,7 +5,12 @@ on:
 
 jobs:
   dart-and-android:
+    name: Dart and Android / Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.47.0', '3.50.0']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -14,9 +19,12 @@ jobs:
           java-version: '17'
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: ${{ matrix.flutter-version }}
           channel: stable
           cache: true
       - run: flutter pub get
+      - run: flutter pub get
+        working-directory: example
       - run: dart format --output=none --set-exit-if-changed lib test example/lib example/test example/integration_test
       - run: flutter analyze --no-pub
       - run: flutter test --no-pub
@@ -28,20 +36,26 @@ jobs:
         working-directory: example/android
 
   ios:
+    name: iOS / Flutter ${{ matrix.flutter-version }} / ${{ matrix.package-manager }}
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
+        flutter-version: ['3.47.0', '3.50.0']
         package-manager: [swiftpm, cocoapods]
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: ${{ matrix.flutter-version }}
           channel: stable
           cache: true
       - name: Select package manager
         if: matrix.package-manager == 'cocoapods'
         run: flutter config --no-enable-swift-package-manager
       - run: flutter pub get
+      - run: flutter pub get
+        working-directory: example
       - name: Build SwiftPM example
         if: matrix.package-manager == 'swiftpm'
         run: flutter build ios --simulator --debug --no-pub

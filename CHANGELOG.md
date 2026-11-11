@@ -1,3 +1,12 @@
+## 2.0.0-dev.2
+
+* Check Flutter 3.47.0 and 3.50.0 in CI across Dart tests, Android builds/native
+  tests and iOS SwiftPM/CocoaPods builds and simulator integration tests.
+* Update the Android example to AGP 9.3.1, Gradle 9.5.0 and Kotlin 2.4.20 for
+  Flutter 3.50 compatibility; keep the plugin minimum at Flutter 3.47.
+* Migrate the example and README Material imports to the standalone material_ui
+  package to avoid Flutter 3.50 deprecation diagnostics.
+
 ## 2.0.0-dev.1
 
 * Integrate native StoreKit and Google Play Review directly; remove in_app_review.
