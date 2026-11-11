@@ -68,9 +68,9 @@ jobs:
           devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '-j']))['devices']
           runtimes = sorted((r for r in devices if 'iOS-' in r), key=lambda r: tuple(map(int, re.findall(r'\d+', r))), reverse=True)
           device = next(d for r in runtimes for d in devices[r] if d['name'].startswith('iPhone'))
-          subprocess.run(['open', '-a', 'Simulator'], check=True)
           if device['state'] != 'Booted':
               subprocess.run(['xcrun', 'simctl', 'boot', device['udid']], check=True)
+          subprocess.run(['open', '-a', 'Simulator', '--args', '-CurrentDeviceUDID', device['udid']], check=True)
           with open(os.environ['GITHUB_ENV'], 'a') as output:
               output.write('IOS_SIMULATOR_UDID=' + device['udid'] + '\n')
           print('Using simulator:', device['name'], device['udid'])
