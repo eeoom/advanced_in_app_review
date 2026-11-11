@@ -1,5 +1,9 @@
 # advanced_in_app_review
 
+> **Version 2.0 is in active development.** The [2.0.0-dev.2 prerelease](https://pub.dev/packages/advanced_in_app_review/versions/2.0.0-dev.2) is available on pub.dev.
+> See the [GitHub prerelease](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0-dev.2) for release notes. The setup and migration guide below describes version 2.0.
+> Tested with Flutter 3.47.0 and 3.50.0.
+
 Native in-app review requests for **Android and iOS**, with persistent conditions,
 session counting, significant events, cancellation and diagnostic results.
 The package owns its StoreKit and Google Play integration; it does not depend on
