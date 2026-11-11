@@ -1,10 +1,10 @@
 # advanced_in_app_review
 
-> **Version 2.0 is in active development.** The [2.0.0-dev.1 prerelease](https://pub.dev/packages/advanced_in_app_review/versions/2.0.0-dev.1) is available on pub.dev.
-> See the [new implementation and migration guide on `develop`](https://github.com/eeoom/advanced_in_app_review/tree/develop#readme) and the [GitHub prerelease](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0-dev.1).
-> Version 2.0 includes its own native Android/iOS integration, improved review scheduling and diagnostics, and support for built-in Kotlin and Swift Package Manager. Requires Flutter 3.47 / Dart 3.13 or newer.
+> **Version 2.0 is in active development.** The [2.0.0-dev.2 prerelease](https://pub.dev/packages/advanced_in_app_review/versions/2.0.0-dev.2) is available on pub.dev.
+> See the [new implementation and migration guide for 2.0](https://github.com/eeoom/advanced_in_app_review/tree/2.0.0-dev.2#readme) and the [GitHub prerelease](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0-dev.2).
+> Version 2.0 includes its own native Android/iOS integration, improved review scheduling and diagnostics, and support for built-in Kotlin and Swift Package Manager. Requires Flutter 3.47 / Dart 3.13 or newer; tested with Flutter 3.47.0 and 3.50.0.
 >
-> The documentation below describes the stable 1.x version. For 2.0 setup and migration, follow the `develop` README linked above.
+> The documentation below describes the stable 1.x version. For 2.0 setup and migration, follow the 2.0 README linked above.
 
 # Description
 A Flutter plugin that lets you show a review pop up where users can leave a review for your app without needing to leave your app.
