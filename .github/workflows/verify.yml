@@ -3,6 +3,10 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dart-and-android:
     name: Dart and Android / Flutter ${{ matrix.flutter-version }}
