@@ -60,6 +60,21 @@ jobs:
       - run: flutter pub get
       - run: flutter pub get
         working-directory: example
+      - name: Start iOS simulator
+        if: matrix.package-manager == 'swiftpm'
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, re, subprocess
+          devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '-j']))['devices']
+          runtimes = sorted((r for r in devices if 'iOS-' in r), key=lambda r: tuple(map(int, re.findall(r'\d+', r))), reverse=True)
+          device = next(d for r in runtimes for d in devices[r] if d['name'].startswith('iPhone'))
+          subprocess.run(['open', '-a', 'Simulator'], check=True)
+          if device['state'] != 'Booted':
+              subprocess.run(['xcrun', 'simctl', 'boot', device['udid']], check=True)
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('IOS_SIMULATOR_UDID=' + device['udid'] + '\n')
+          print('Using simulator:', device['name'], device['udid'])
+          PYTHON
       - name: Build SwiftPM example
         if: matrix.package-manager == 'swiftpm'
         run: flutter build ios --simulator --debug --no-pub
@@ -73,9 +88,8 @@ jobs:
           flutter build ios --simulator --debug --no-pub
       - name: Native iOS smoke test
         if: matrix.package-manager == 'swiftpm'
+        timeout-minutes: 15
         working-directory: example
         run: |
-          device=$(xcrun simctl list devices available -j | python3 -c 'import sys,json; print(next(d["udid"] for r,ds in json.load(sys.stdin)["devices"].items() if "iOS" in r for d in ds if d["name"].startswith("iPhone")))')
-          xcrun simctl boot "$device"
-          xcrun simctl bootstatus "$device" -b
-          flutter test integration_test/native_review_test.dart -d "$device"
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          flutter test integration_test/native_review_test.dart -d "$IOS_SIMULATOR_UDID" --no-pub --verbose
