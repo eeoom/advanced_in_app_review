@@ -33,6 +33,8 @@ class InAppReviewManager {
   int? _lastAttempt;
   Timer? _timer;
   Completer<void>? _delay;
+  Completer<void>? _conditionCancellation;
+  final List<Future<bool> Function()> _customConditions = [];
   int _minLaunchTimes = 2;
   int _minDaysAfterInstall = 2;
   int _minDaysBeforeRemind = 90;
@@ -111,6 +113,9 @@ class InAppReviewManager {
     }
     _requestPending = true;
     final generation = _generation;
+    final conditions = List<Future<bool> Function()>.of(_customConditions);
+    final cancellation = Completer<void>();
+    _conditionCancellation = cancellation;
     try {
       if (!_isActive()) {
         return const ReviewRequestResult(ReviewRequestStatus.appNotActive);
@@ -142,6 +147,51 @@ class InAppReviewManager {
       }
       if (!_isActive()) {
         return const ReviewRequestResult(ReviewRequestStatus.appNotActive);
+      }
+      for (final condition in conditions) {
+        bool allowed;
+        try {
+          // User callbacks run outside the serialized storage queue. Cancelling
+          // stops waiting, but cannot abort work owned by the application.
+          allowed = await Future.any<bool>([
+            Future<bool>.sync(condition),
+            cancellation.future.then((_) => false),
+          ]);
+        } catch (error) {
+          if (_disposed || generation != _generation) {
+            return const ReviewRequestResult(ReviewRequestStatus.cancelled);
+          }
+          return ReviewRequestResult(
+            ReviewRequestStatus.failed,
+            errorCode: 'custom_condition_failed',
+            message: error.toString(),
+          );
+        }
+        if (_disposed || generation != _generation) {
+          return const ReviewRequestResult(ReviewRequestStatus.cancelled);
+        }
+        if (!_isActive()) {
+          return const ReviewRequestResult(ReviewRequestStatus.appNotActive);
+        }
+        if (!allowed) {
+          return const ReviewRequestResult(
+            ReviewRequestStatus.conditionsNotMet,
+          );
+        }
+      }
+      // An application callback may have changed configuration or storage.
+      if (conditions.isNotEmpty) {
+        if (!await _meetsConditions()) {
+          return const ReviewRequestResult(
+            ReviewRequestStatus.conditionsNotMet,
+          );
+        }
+        if (_disposed || generation != _generation) {
+          return const ReviewRequestResult(ReviewRequestStatus.cancelled);
+        }
+        if (!_isActive()) {
+          return const ReviewRequestResult(ReviewRequestStatus.appNotActive);
+        }
       }
       // Do not call isAvailable first: on Android that used to request and
       // discard a ReviewInfo before requesting another one for the real flow.
@@ -180,6 +230,7 @@ class InAppReviewManager {
       _timer?.cancel();
       _timer = null;
       _delay = null;
+      _conditionCancellation = null;
       _requestPending = false;
     }
   }
@@ -204,6 +255,11 @@ class InAppReviewManager {
   void setMinSignificantEvents(int value) =>
       _minSignificantEvents = _nonNegative(value);
 
+  void addCustomConditionBeforeShowDialog(Future<bool> Function() condition) {
+    _ensureUsable();
+    _customConditions.add(condition);
+  }
+
   int _nonNegative(int value) {
     if (value < 0) {
       throw ArgumentError.value(value, 'value', 'Must be non-negative');
@@ -214,6 +270,10 @@ class InAppReviewManager {
   void cancelPendingRequest() {
     _generation++;
     _timer?.cancel();
+    final cancellation = _conditionCancellation;
+    if (cancellation != null && !cancellation.isCompleted) {
+      cancellation.complete();
+    }
     final delay = _delay;
     if (delay != null && !delay.isCompleted) delay.complete();
   }

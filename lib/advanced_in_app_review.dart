@@ -87,6 +87,17 @@ class AdvancedInAppReview with WidgetsBindingObserver {
     return this;
   }
 
+  /// Adds an asynchronous gate evaluated once per eligible attempt, after the
+  /// configured delay. All registered gates must return true. Applies to both
+  /// explicit and automatic requests; registration order is preserved.
+  AdvancedInAppReview addCustomConditionBeforeShowDialog(
+    Future<bool> Function() condition,
+  ) {
+    _ensureUsable();
+    _manager.addCustomConditionBeforeShowDialog(condition);
+    return this;
+  }
+
   AdvancedInAppReview setMinSessionGap(Duration value) {
     if (value.isNegative) throw ArgumentError.value(value, 'value');
     _sessionGap = value;
