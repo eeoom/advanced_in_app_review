@@ -1,7 +1,7 @@
 # advanced_in_app_review
 
-> **Version 2.0 includes breaking changes for 1.x apps.** Read [Migration from 1.x](#migration-from-1x) before upgrading.
-> See the [2.0.0 release notes](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0).
+> **Upgrading from 1.x to 2.x includes breaking changes, including in 2.1.0.** Read [Migration from 1.x](#migration-from-1x) before upgrading.
+> See the [2.1.0 release notes](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.1.0).
 
 Native in-app review requests for **Android and iOS**, with persistent conditions,
 session counting, significant events, cancellation and diagnostic results.
@@ -197,6 +197,12 @@ await review.openStoreListing(appStoreId: 'YOUR_NUMERIC_APP_STORE_ID');
 The ID is required only on iOS. Android uses the application package name and
 falls back to its HTTPS Play listing if the Play Store app cannot be opened.
 Handle exceptions from this method to provide feedback when opening fails.
+
+## Updating from 2.0.x to 2.1.0
+
+No additional breaking changes: custom asynchronous conditions are optional.
+Existing 2.0.x integrations keep their behavior when no callbacks are registered.
+Apps upgrading directly from 1.x must still follow the migration guide below.
 
 ## Migration from 1.x
 
