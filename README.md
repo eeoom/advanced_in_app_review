@@ -157,6 +157,35 @@ its active scene. It never picks an arbitrary `connectedScenes.first`. StoreKit
 calls execute on the main actor. Android rechecks Activity readiness after the
 asynchronous Play request and ignores late callbacks after detachment.
 
+## Custom asynchronous conditions
+
+Register application-specific gates before calling `monitor()`. They apply to
+both automatic attempts and explicit `requestReviewIfEligible()` calls:
+
+```dart
+final review = AdvancedInAppReview(onResult: (result) {
+  debugPrint(result.toString());
+})
+  ..addCustomConditionBeforeShowDialog(() async {
+    return await isOnSuitableScreen(); // Your app's asynchronous check.
+  });
+
+await review.monitor(automaticallyRequestReview: true);
+```
+
+The built-in time/session/event conditions must pass first. After the configured
+delay, callbacks run once per attempt in registration order. All must return
+`true`; the first `false` stops the attempt with `conditionsNotMet`. A thrown
+error returns `failed` with `errorCode: custom_condition_failed`. Neither case
+advances the reminder timestamp. Configuration and app activity are checked
+again before invoking the native API.
+
+Backgrounding or disposal stops waiting for pending callbacks and prevents the
+native request. Application-owned asynchronous work itself cannot be aborted by
+the plugin. Callbacks should finish promptly; without cancellation, an unresolved
+callback keeps the attempt pending. Conditions added during an attempt apply on
+the next attempt. Conditions belong to the instance and are not persisted.
+
 ## A permanent “Rate this app” button
 
 Use the store listing rather than a quota-limited in-app request:

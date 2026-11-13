@@ -1,3 +1,10 @@
+## Unreleased
+
+* Add `addCustomConditionBeforeShowDialog` for ordered asynchronous conditions
+  in automatic and explicit review requests, inspired by PR #18 (benco8186).
+* Diagnose callback errors without advancing cooldown; cancel pending callback
+  waits on backgrounding/disposal and recheck eligibility before native calls.
+
 ## 2.0.0
 
 First stable release of the native Android/iOS integration tested in the 2.0
