@@ -1,0 +1,95 @@
+name: Verify
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dart-and-android:
+    name: Dart and Android / Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.47.0', '3.50.0']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter pub get
+        working-directory: example
+      - run: dart format --output=none --set-exit-if-changed lib test example/lib example/test example/integration_test
+      - run: flutter analyze --no-pub
+      - run: flutter test --no-pub
+      - run: flutter test test/widget_test.dart --no-pub
+        working-directory: example
+      - run: flutter build apk --debug --no-pub
+        working-directory: example
+      - run: ./gradlew :advanced_in_app_review:testDebugUnitTest
+        working-directory: example/android
+
+  ios:
+    name: iOS / Flutter ${{ matrix.flutter-version }} / ${{ matrix.package-manager }}
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.47.0', '3.50.0']
+        package-manager: [swiftpm, cocoapods]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: stable
+          cache: true
+      - name: Select package manager
+        if: matrix.package-manager == 'cocoapods'
+        run: flutter config --no-enable-swift-package-manager
+      - run: flutter pub get
+      - run: flutter pub get
+        working-directory: example
+      - name: Start iOS simulator
+        if: matrix.package-manager == 'swiftpm'
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, re, subprocess
+          devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '-j']))['devices']
+          runtimes = sorted((r for r in devices if 'iOS-' in r), key=lambda r: tuple(map(int, re.findall(r'\d+', r))), reverse=True)
+          device = next(d for r in runtimes for d in devices[r] if d['name'].startswith('iPhone'))
+          if device['state'] != 'Booted':
+              subprocess.run(['xcrun', 'simctl', 'boot', device['udid']], check=True)
+          subprocess.run(['open', '-a', 'Simulator', '--args', '-CurrentDeviceUDID', device['udid']], check=True)
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('IOS_SIMULATOR_UDID=' + device['udid'] + '\n')
+          print('Using simulator:', device['name'], device['udid'])
+          PYTHON
+      - name: Build SwiftPM example
+        if: matrix.package-manager == 'swiftpm'
+        run: flutter build ios --simulator --debug --no-pub
+        working-directory: example
+      - name: Build a fresh CocoaPods host
+        if: matrix.package-manager == 'cocoapods'
+        run: |
+          flutter create --platforms=ios --no-pub --project-name review_cocoapods_check "$RUNNER_TEMP/review_cocoapods_check"
+          cd "$RUNNER_TEMP/review_cocoapods_check"
+          flutter pub add advanced_in_app_review --path "$GITHUB_WORKSPACE"
+          flutter build ios --simulator --debug --no-pub
+      - name: Native iOS smoke test
+        if: matrix.package-manager == 'swiftpm'
+        timeout-minutes: 15
+        working-directory: example
+        run: |
+          xcrun simctl bootstatus "$IOS_SIMULATOR_UDID" -b
+          flutter test integration_test/native_review_test.dart -d "$IOS_SIMULATOR_UDID" --no-pub --verbose
