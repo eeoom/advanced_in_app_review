@@ -1,9 +1,14 @@
-## Unreleased
+## 2.1.0
 
 * Add `addCustomConditionBeforeShowDialog` for ordered asynchronous conditions
   in automatic and explicit review requests, inspired by PR #18 (benco8186).
 * Diagnose callback errors without advancing cooldown; cancel pending callback
   waits on backgrounding/disposal and recheck eligibility before native calls.
+
+No additional breaking changes from 2.0.x. For upgrades from 1.x, the 2.0
+breaking changes still apply: automatic requests require explicit opt-in, the
+minimum supported SDK/platform versions increased, and session/cooldown behavior
+changed. The complete migration guide and prominent warning remain in README.
 
 ## 2.0.0
 
