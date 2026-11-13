@@ -1,3 +1,34 @@
+## 2.0.0
+
+First stable release of the native Android/iOS integration tested in the 2.0
+prereleases. No additional runtime changes since 2.0.0-dev.2.
+
+### Breaking changes from 1.x
+
+* Require Flutter 3.47 / Dart 3.13, Android API 24+ and iOS 13+ (Flutter may
+  require a newer iOS deployment target).
+* `monitor()` now returns `Future<void>` and initializes without requesting a
+  review by default. Await `monitor(automaticallyRequestReview: true)` for
+  automatic attempts, or explicitly call `requestReviewIfEligible()`.
+* Count foreground sessions with a default 30-minute background gap instead of
+  counting every resume. Change the default reminder interval from 1 to 90 days.
+* Make configuration instance-specific rather than global singleton state.
+* Own the native integration directly; remove manual Play Review dependencies
+  that were added solely for this package. Android and iOS are supported.
+
+### Improvements
+
+* Use the requesting Flutter view's active iOS window and guard StoreKit APIs
+  for the declared iOS deployment target.
+* Serialize storage updates, migrate existing package preferences, prevent
+  overlapping requests and cancel pending delays on backgrounding/disposal.
+* Add diagnostic results, significant-event conditions and store listing links.
+* Support Swift Package Manager, CocoaPods and Android built-in Kotlin.
+* Verify Flutter 3.47.0 and 3.50.0 in CI, including Android builds/native tests,
+  iOS SwiftPM/CocoaPods builds and iOS simulator integration tests.
+
+See the README migration guide for setup and behavior changes.
+
 ## 2.0.0-dev.2
 
 * Fix the iOS 13 StoreKit fallback so SwiftPM builds honor the declared minimum

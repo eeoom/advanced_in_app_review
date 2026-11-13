@@ -1,8 +1,7 @@
 # advanced_in_app_review
 
-> **Version 2.0 is in active development.** The [2.0.0-dev.2 prerelease](https://pub.dev/packages/advanced_in_app_review/versions/2.0.0-dev.2) is available on pub.dev.
-> See the [GitHub prerelease](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0-dev.2) for release notes. The setup and migration guide below describes version 2.0.
-> Tested with Flutter 3.47.0 and 3.50.0.
+> **Version 2.0 includes breaking changes for 1.x apps.** Read [Migration from 1.x](#migration-from-1x) before upgrading.
+> See the [2.0.0 release notes](https://github.com/eeoom/advanced_in_app_review/releases/tag/2.0.0).
 
 Native in-app review requests for **Android and iOS**, with persistent conditions,
 session counting, significant events, cancellation and diagnostic results.
@@ -172,6 +171,20 @@ Handle exceptions from this method to provide feedback when opening fails.
 
 ## Migration from 1.x
 
+**A dependency version update alone does not preserve automatic review requests.**
+`monitor()` initializes the plugin but no longer requests a review by default.
+For automatic attempts, replace the old call with:
+
+```dart
+await review.monitor(automaticallyRequestReview: true);
+```
+
+Use the complete root-widget example above for initialization after the first
+frame, error handling and disposal. All configured conditions must be met before
+an attempt; the operating system still decides whether a dialog appears.
+
+- Upgrade to Flutter 3.47 / Dart 3.13 or newer, Android API 24+ and iOS 13+
+  (your Flutter version may require a higher iOS target).
 - Remove any manually added `com.google.android.play:review` / `review-ktx`
   dependencies that existed only for this package.
 - Await `monitor()`, which now returns `Future<void>`.
